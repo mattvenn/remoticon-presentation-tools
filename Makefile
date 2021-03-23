@@ -1,6 +1,6 @@
-OPEN_LANE=/home/matt/work/asic-workshop/openlane-mpw-one-b
-DESIGN=inverter
-RUN_DATE=23-03_16-55
+OPEN_LANE=/home/matt/work/asic-workshop/openlane_v09
+DESIGN=seven_segment_seconds
+RUN_DATE=23-03_17-45
 RUN_DIR=$(OPEN_LANE)/designs/$(DESIGN)/runs/$(RUN_DATE)
 # gds=$(\ls ../${OPEN_LANE}/${DESIGN}/${macro}/runs/*/results/*/*gds --sort=time | head -1;)
 
@@ -20,7 +20,7 @@ magic-floorplan:
 # cells scattered about, no outline
 magic-replace:
 	cp load_head.tcl load.tcl
-	sed -e 's|FILE|./tmp/placement/replace.def|' load_head.tcl > load.tcl
+	sed -e 's|FILE|./tmp/placement/8-replace.def|' load_head.tcl > load.tcl
 	cd $(RUN_DIR) && magic -rcfile $(PDK_ROOT)/sky130A/libs.tech/magic/sky130A.magicrc $(PWD)/load.tcl
 
 # 3
