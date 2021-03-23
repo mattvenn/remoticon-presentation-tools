@@ -1,11 +1,13 @@
-PDK_ROOT=/home/matt/work/asic-workshop/pdks/
-OPEN_LANE=/home/matt/work/asic-workshop/openlane
-DESIGN=seven_segment_seconds
-#inverter
-RUN_DATE=27-10_17-56
+OPEN_LANE=/home/matt/work/asic-workshop/openlane-mpw-one-b
+DESIGN=inverter
+RUN_DATE=23-03_16-55
 RUN_DIR=$(OPEN_LANE)/designs/$(DESIGN)/runs/$(RUN_DATE)
+# gds=$(\ls ../${OPEN_LANE}/${DESIGN}/${macro}/runs/*/results/*/*gds --sort=time | head -1;)
 
 LEF=$(RUN_DIR)/tmp/merged.lef
+
+show-synth:
+	xdot $(RUN_DIR)/tmp/synthesis/hierarchy.dot
 
 # 1
 # spacers only?
@@ -94,6 +96,9 @@ show_sky_inverter: # broken lyp for some reason
 
 show_sky_all:
 	klayout -l $(PDK_ROOT)/sky130A/libs.tech/klayout/sky130A.lyp $(PDK_ROOT)/sky130A/libs.ref/sky130_fd_sc_hd/gds/sky130_fd_sc_hd.gds
+
+logo:
+	klayout -l $(PDK_ROOT)/sky130A/libs.tech/klayout/sky130A.lyp ../logo-to-gds2/logo.gds
 
 #in magic:
 
