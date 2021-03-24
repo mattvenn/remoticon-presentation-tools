@@ -1,6 +1,6 @@
 OPEN_LANE=/home/matt/work/asic-workshop/openlane_v09
-DESIGN=seven_segment_seconds
-RUN_DATE=23-03_17-45
+DESIGN=inverter
+RUN_DATE=24-03_11-17
 RUN_DIR=$(OPEN_LANE)/designs/$(DESIGN)/runs/$(RUN_DATE)
 # gds=$(\ls ../${OPEN_LANE}/${DESIGN}/${macro}/runs/*/results/*/*gds --sort=time | head -1;)
 
@@ -9,12 +9,17 @@ LEF=$(RUN_DIR)/tmp/merged.lef
 show-synth:
 	xdot $(RUN_DIR)/tmp/synthesis/hierarchy.dot
 
+show-yosys-report:
+	cat $(RUN_DIR)/reports/synthesis/1-yosys_4.stat.rpt
 # 1
 # spacers only?
 magic-floorplan:
 	cp load_head.tcl load.tcl
 	sed -e 's|FILE|./results/floorplan/$(DESIGN).floorplan.def|' load_head.tcl > load.tcl
 	cd $(RUN_DIR) && magic -rcfile $(PDK_ROOT)/sky130A/libs.tech/magic/sky130A.magicrc $(PWD)/load.tcl
+
+klayout-floorplan:
+	klayout -l klayout_def.xml $(RUN_DIR)/results/floorplan/$(DESIGN).floorplan.def
 
 # 2
 # cells scattered about, no outline
@@ -23,6 +28,9 @@ magic-replace:
 	sed -e 's|FILE|./tmp/placement/8-replace.def|' load_head.tcl > load.tcl
 	cd $(RUN_DIR) && magic -rcfile $(PDK_ROOT)/sky130A/libs.tech/magic/sky130A.magicrc $(PWD)/load.tcl
 
+klayout-replace:
+	klayout -l klayout_def.xml $(RUN_DIR)/tmp/placement/8-replace.def
+
 # 3
 # cells aligned to grid, no routing
 magic-placement:
@@ -30,9 +38,15 @@ magic-placement:
 	sed -e 's|FILE|./results/placement/$(DESIGN).placement.def|' load_head.tcl > load.tcl
 	cd $(RUN_DIR) && magic -rcfile $(PDK_ROOT)/sky130A/libs.tech/magic/sky130A.magicrc $(PWD)/load.tcl
 
+klayout-placement:
+	klayout -l klayout_def.xml $(RUN_DIR)/results/placement/$(DESIGN).placement.def
+
 # 4
 magic-final:
 	cd $(RUN_DIR) && magic -rcfile $(PDK_ROOT)/sky130A/libs.tech/magic/sky130A.magicrc results/magic/$(DESIGN).gds
+
+klayout-final:
+	klayout -l klayout_gds.xml $(RUN_DIR)/results/magic/$(DESIGN).gds
 
 # good
 # shows pdn with cells scattered about
