@@ -1,13 +1,16 @@
 OPEN_LANE=/home/matt/work/asic-workshop/openlane_v09
-DESIGN=inverter
-RUN_DATE=24-03_11-17
-RUN_DIR=$(OPEN_LANE)/designs/$(DESIGN)/runs/$(RUN_DATE)
+# name of top module
+DESIGN=top
+# directory inside openlane
+DESIGN_DIR=led_flasher
+RUN_DATE=15-04_09-29
+RUN_DIR=$(OPEN_LANE)/designs/$(DESIGN_DIR)/runs/$(RUN_DATE)
 # gds=$(\ls ../${OPEN_LANE}/${DESIGN}/${macro}/runs/*/results/*/*gds --sort=time | head -1;)
 
 LEF=$(RUN_DIR)/tmp/merged.lef
 
 show-synth:
-	xdot $(RUN_DIR)/tmp/synthesis/hierarchy.dot
+	xdot $(RUN_DIR)/tmp/synthesis/post_techmap.dot
 
 show-yosys-report:
 	cat $(RUN_DIR)/reports/synthesis/1-yosys_4.stat.rpt
@@ -20,6 +23,9 @@ magic-floorplan:
 
 klayout-floorplan:
 	klayout -l klayout_def.xml $(RUN_DIR)/results/floorplan/$(DESIGN).floorplan.def
+
+klayout-pdn:
+	klayout -l klayout_def.xml $(RUN_DIR)/tmp/floorplan/7-pdn.def
 
 # 2
 # cells scattered about, no outline
@@ -40,6 +46,9 @@ magic-placement:
 
 klayout-placement:
 	klayout -l klayout_def.xml $(RUN_DIR)/results/placement/$(DESIGN).placement.def
+
+klayout-cts:
+	klayout -l klayout_def.xml $(RUN_DIR)/results/cts/$(DESIGN).cts.def
 
 # 4
 magic-final:
@@ -106,7 +115,10 @@ final_gds:
 	klayout -l $(PDK_ROOT)/open_pdks/sky130/klayout/sky130.lyp $(RUN_DIR)/results/magic/$(DESIGN).gds
 
 show_sky_inverter: # broken lyp for some reason
-	klayout -l $(PDK_ROOT)/sky130A/libs.tech/klayout/sky130A.lyp $(PDK_ROOT)/skywater-pdk/libraries/sky130_fd_sc_hd/latest/cells/inv/sky130_fd_sc_hd__inv_2.gds
+	klayout -l $(PDK_ROOT)/sky130A/libs.tech/klayout/sky130A.lyp $(PDK_ROOT)/skywater-pdk/libraries/sky130_fd_sc_hd/latest/cells/inv/sky130_fd_sc_hd__inv_1.gds
+
+show_3d_inverter:
+	cd ~/work/asic-workshop/GDS3D; linux/GDS3D -p techfiles/sky130.txt  -i ~/work/asic-workshop/pdks_v09/skywater-pdk/libraries/sky130_fd_sc_hd/latest/cells/inv/sky130_fd_sc_hd__inv_1.gds
 
 show_sky_all:
 	klayout -l $(PDK_ROOT)/sky130A/libs.tech/klayout/sky130A.lyp $(PDK_ROOT)/sky130A/libs.ref/sky130_fd_sc_hd/gds/sky130_fd_sc_hd.gds
